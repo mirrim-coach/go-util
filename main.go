@@ -1,4 +1,4 @@
-package main
+package goutils
 
 import (
 	"encoding/base32"
@@ -29,7 +29,7 @@ func GetEnvVariable(env string, d string) string {
 		envIsLoaded = true
 		err := godotenv.Load()
 		if err != nil {
-			log.Info("Error loading .env file: " + err.Error())
+			log.Info(".Env file failed to load: " + err.Error())
 		}
 	}
 
