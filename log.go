@@ -22,7 +22,7 @@ func Logger() *logrus.Logger {
 			hostname = "unnamed_app"
 		}
 
-		hook, err := lSyslog.NewSyslogHook("udp", GetEnvVariable("LOG_PATH", "logs7.papertrailapp.com:51074"), syslog.LOG_INFO, GetEnvVariable("HOSTNAME", hostname))
+		hook, err := lSyslog.NewSyslogHook("udp", GetEnvVariable("LOG_HOST", "logs7.papertrailapp.com:51074"), syslog.LOG_INFO, GetEnvVariable("HOSTNAME", hostname))
 
 		if err == nil {
 			log.Hooks.Add(hook)
