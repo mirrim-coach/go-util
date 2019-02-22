@@ -3,9 +3,9 @@ package goutils
 import (
 	"encoding/base32"
 	"github.com/joho/godotenv"
-	log "github.com/sirupsen/logrus"
 	"math/rand"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -29,7 +29,7 @@ func GetEnvVariable(env string, d string) string {
 		envIsLoaded = true
 		err := godotenv.Load()
 		if err != nil {
-			log.Info(".Env file failed to load: " + err.Error())
+			Logger().Infof(".Env file failed to load: %s. This is ok!", err.Error())
 		}
 	}
 
@@ -40,4 +40,15 @@ func GetEnvVariable(env string, d string) string {
 	}
 
 	return val
+}
+
+//GetEnvVariableInt64 returns the environment variable as an int64
+func GetEnvVariableInt64(env string, d string) (int64, error) {
+	v := GetEnvVariable(env, d)
+	i, err := strconv.ParseInt(v, 10, 64)
+
+	if err != nil {
+		return 0, err
+	}
+	return i, nil
 }
