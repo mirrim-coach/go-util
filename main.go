@@ -29,7 +29,7 @@ func GetEnvVariable(env string, d string) string {
 		envIsLoaded = true
 		err := godotenv.Load()
 		if err != nil {
-			Logger().Infof(".Env file failed to load: %s. This is ok!", err.Error())
+			Logger().Debugf(".Env file failed to load: %s. This is ok!", err.Error())
 		}
 	}
 
