@@ -58,10 +58,7 @@ func GetMockDB() *gorm.DB {
 func GetDB() *gorm.DB {
 	env := GetEnvVariable("ENV", "development")
 	if env == "test" {
-		Logger().Warn("DB in test environment")
 		return GetMockDB()
-	} else {
-		Logger().Warn("DB in dev environment")
 	}
 	return GetDBWithConfig(defaultConfig.toString())
 }
