@@ -2,8 +2,10 @@ package goutils
 
 import (
 	"fmt"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres" //Adds the postgres dialect to gorm
+	mocket "github.com/selvatico/go-mocket"
 )
 
 var (
@@ -41,7 +43,25 @@ func GetDBWithConfig(conf string) *gorm.DB {
 	return db
 }
 
+func GetMockDB() *gorm.DB {
+	mocket.Catcher.Register() // Safe register. Allowed multiple calls to save
+	mocket.Catcher.Logging = true
+	// GORM
+	db, err := gorm.Open(mocket.DriverName, "mock connection string") // Can be any connection string
+	if err != nil {
+		Logger().Fatal(err.Error())
+	}
+	return db
+}
+
 // GetDB returns an instance of the db
 func GetDB() *gorm.DB {
+	env := GetEnvVariable("ENV", "development")
+	if env == "test" {
+		Logger().Warn("DB in test environment")
+		return GetMockDB()
+	} else {
+		Logger().Warn("DB in dev environment")
+	}
 	return GetDBWithConfig(defaultConfig.toString())
 }
