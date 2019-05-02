@@ -1,11 +1,14 @@
 package goutils
 
 import (
-	"github.com/go-redis/redis"
 	"time"
+
+	"github.com/alicebob/miniredis"
+	"github.com/go-redis/redis"
 )
 
 var _client *RClient
+var connection_options *redis.Options
 
 type RClient struct {
 	client *redis.Client
@@ -13,11 +16,12 @@ type RClient struct {
 
 func Redis() *RClient {
 	if _client == nil {
-		client := redis.NewClient(&redis.Options{
-			Addr:     GetEnvVariable("REDIS_ADDRESS", "localhost:6379"),
-			Password: GetEnvVariable("REDIS_PASSWORD", ""),
-			DB:       0,
-		})
+		if GetEnvVariable("ENV", "development") == "test" {
+			connection_options = TestRedisOptions()
+		} else {
+			connection_options = RedisOptions()
+		}
+		client := redis.NewClient(connection_options)
 
 		_client = &RClient{
 			client: client,
@@ -54,4 +58,22 @@ func (r *RClient) Expire(key string, duration time.Duration) error {
 
 func (r *RClient) ExpireAt(key string, timeout time.Time) error {
 	return r.client.ExpireAt(key, timeout).Err()
+}
+
+func RedisOptions() *redis.Options {
+	return &redis.Options{
+		Addr:     GetEnvVariable("REDIS_ADDRESS", "localhost:6379"),
+		Password: GetEnvVariable("REDIS_PASSWORD", ""),
+		DB:       0,
+	}
+}
+
+// newTestRedis returns a redis.Cmdable.
+func TestRedisOptions() *redis.Options {
+	mr, err := miniredis.Run()
+	if err != nil {
+		panic(err)
+	}
+
+	return &redis.Options{Addr: mr.Addr()}
 }
