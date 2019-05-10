@@ -51,28 +51,28 @@ func getSecret(secretEnv string, secretName string) {
 			switch aerr.Code() {
 			case secretsmanager.ErrCodeDecryptionFailure:
 				// Secrets Manager can't decrypt the protected secret text using the provided KMS key.
-				fmt.Println(secretsmanager.ErrCodeDecryptionFailure, aerr.Error())
+				Logger().Error(secretsmanager.ErrCodeDecryptionFailure, aerr.Error())
 
 			case secretsmanager.ErrCodeInternalServiceError:
 				// An error occurred on the server side.
-				fmt.Println(secretsmanager.ErrCodeInternalServiceError, aerr.Error())
+				Logger().Error(secretsmanager.ErrCodeInternalServiceError, aerr.Error())
 
 			case secretsmanager.ErrCodeInvalidParameterException:
 				// You provided an invalid value for a parameter.
-				fmt.Println(secretsmanager.ErrCodeInvalidParameterException, aerr.Error())
+				Logger().Error(secretsmanager.ErrCodeInvalidParameterException, aerr.Error())
 
 			case secretsmanager.ErrCodeInvalidRequestException:
 				// You provided a parameter value that is not valid for the current state of the resource.
-				fmt.Println(secretsmanager.ErrCodeInvalidRequestException, aerr.Error())
+				Logger().Error(secretsmanager.ErrCodeInvalidRequestException, aerr.Error())
 
 			case secretsmanager.ErrCodeResourceNotFoundException:
 				// We can't find the resource that you asked for.
-				fmt.Println(secretsmanager.ErrCodeResourceNotFoundException, aerr.Error())
+				Logger().Error(secretsmanager.ErrCodeResourceNotFoundException, aerr.Error())
 			}
 		} else {
 			// Print the error, cast err to awserr.Error to get the Code and
 			// Message from an error.
-			fmt.Println(err.Error())
+			Logger().Error(err.Error())
 		}
 		return
 	}
@@ -86,7 +86,7 @@ func getSecret(secretEnv string, secretName string) {
 		decodedBinarySecretBytes := make([]byte, base64.StdEncoding.DecodedLen(len(result.SecretBinary)))
 		len, err := base64.StdEncoding.Decode(decodedBinarySecretBytes, result.SecretBinary)
 		if err != nil {
-			fmt.Println("Base64 Decode Error:", err)
+			Logger().Error("Base64 Decode Error:", err)
 			return
 		}
 		secretString = string(decodedBinarySecretBytes[:len])
@@ -99,8 +99,11 @@ func getSecret(secretEnv string, secretName string) {
 		panic(err)
 	}
 
+	Logger().Infof("Setting ENV Variables from %s", secretEnv)
+
 	for k, v := range variables {
 		k = convertKey(secretEnv, k)
+		Logger().Infof("- Setting %s", k)
 		os.Setenv(k, fmt.Sprintf("%v", v))
 	}
 
