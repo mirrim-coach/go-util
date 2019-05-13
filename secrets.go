@@ -68,10 +68,10 @@ func getSecret(secretEnv string, secretName string) {
 			case secretsmanager.ErrCodeResourceNotFoundException:
 				// We can't find the resource that you asked for.
 				Logger().Error(secretsmanager.ErrCodeResourceNotFoundException, aerr.Error())
+			default:
+				Logger().Error(aerr.Error())
 			}
 		} else {
-			// Print the error, cast err to awserr.Error to get the Code and
-			// Message from an error.
 			Logger().Error(err.Error())
 		}
 		return
