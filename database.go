@@ -8,17 +8,6 @@ import (
 	mocket "github.com/selvatico/go-mocket"
 )
 
-var (
-	defaultConfig = DatabaseConfig{
-		Host:         GetEnvVariable("DB_HOST", "localhost"),
-		Port:         GetEnvVariable("DB_PORT", "5432"),
-		User:         GetEnvVariable("DB_USER", "local"),
-		Password:     GetEnvVariable("DB_PASS", ""),
-		DatabaseName: GetEnvVariable("DB_NAME", "auth"),
-		SSLMode:      GetEnvVariable("DB_SSL", "disable"),
-	}
-)
-
 // DatabaseConfig is a struct containing the database configuration
 type DatabaseConfig struct {
 	Host         string
@@ -33,6 +22,18 @@ func (d DatabaseConfig) toString() string {
 	return fmt.Sprintf(`host=%s port=%s user=%s dbname=%s password="%s" sslmode=%s`, d.Host, d.Port, d.User, d.DatabaseName, d.Password, d.SSLMode)
 }
 
+//GetDefaultConfig returns a default config option
+func GetDefaultConfig() *DatabaseConfig {
+	return &DatabaseConfig{
+		Host:         GetEnvVariable("DB_HOST", "localhost"),
+		Port:         GetEnvVariable("DB_PORT", "5432"),
+		User:         GetEnvVariable("DB_USER", "local"),
+		Password:     GetEnvVariable("DB_PASS", ""),
+		DatabaseName: GetEnvVariable("DB_NAME", "auth"),
+		SSLMode:      GetEnvVariable("DB_SSL", "disable"),
+	}
+}
+
 // GetDBWithConfig returns a new db instance with the specified config
 func GetDBWithConfig(conf string) *gorm.DB {
 	db, err := gorm.Open("postgres", conf)
@@ -43,6 +44,7 @@ func GetDBWithConfig(conf string) *gorm.DB {
 	return db
 }
 
+//GetMockDB returns the mock database
 func GetMockDB() *gorm.DB {
 	mocket.Catcher.Register() // Safe register. Allowed multiple calls to save
 	mocket.Catcher.Logging = true
@@ -60,5 +62,5 @@ func GetDB() *gorm.DB {
 	if env == "test" {
 		return GetMockDB()
 	}
-	return GetDBWithConfig(defaultConfig.toString())
+	return GetDBWithConfig(GetDefaultConfig().toString())
 }
