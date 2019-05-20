@@ -17,7 +17,7 @@ func Logger() *logrus.Logger {
 
 		log := logrus.New()
 
-		logLevel, err := logrus.ParseLevel(util.GetEnvVariable("LOG_LEVEL", "info"))
+		logLevel, err := logrus.ParseLevel(GetEnvVariable("LOG_LEVEL", "info"))
 		if err == nil {
 			log.SetLevel(logLevel)
 		}
