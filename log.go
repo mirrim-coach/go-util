@@ -16,6 +16,12 @@ func Logger() *logrus.Logger {
 	if logger == nil {
 
 		log := logrus.New()
+
+		logLevel, err := logrus.ParseLevel(util.GetEnvVariable("LOG_LEVEL", "info"))
+		if err == nil {
+			log.SetLevel(logLevel)
+		}
+
 		hostname, err := os.Hostname()
 
 		if err != nil {
