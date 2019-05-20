@@ -22,26 +22,37 @@ func (d DatabaseConfig) toString() string {
 	return fmt.Sprintf(`host=%s port=%s user=%s dbname=%s password="%s" sslmode=%s`, d.Host, d.Port, d.User, d.DatabaseName, d.Password, d.SSLMode)
 }
 
+var _DefaultConfig *DatabaseConfig
+
 //GetDefaultConfig returns a default config option
 func GetDefaultConfig() *DatabaseConfig {
-	return &DatabaseConfig{
-		Host:         GetEnvVariable("DB_HOST", "localhost"),
-		Port:         GetEnvVariable("DB_PORT", "5432"),
-		User:         GetEnvVariable("DB_USER", "local"),
-		Password:     GetEnvVariable("DB_PASS", ""),
-		DatabaseName: GetEnvVariable("DB_NAME", "auth"),
-		SSLMode:      GetEnvVariable("DB_SSL", "disable"),
+	if _DefaultConfig == nil {
+		_DefaultConfig = &DatabaseConfig{
+			Host:         GetEnvVariable("DB_HOST", "localhost"),
+			Port:         GetEnvVariable("DB_PORT", "5432"),
+			User:         GetEnvVariable("DB_USER", "local"),
+			Password:     GetEnvVariable("DB_PASS", ""),
+			DatabaseName: GetEnvVariable("DB_NAME", "auth"),
+			SSLMode:      GetEnvVariable("DB_SSL", "disable"),
+		}
 	}
+	return _DefaultConfig
 }
+
+var _db *gorm.DB
 
 // GetDBWithConfig returns a new db instance with the specified config
 func GetDBWithConfig(conf string) *gorm.DB {
-	db, err := gorm.Open("postgres", conf)
-	if err != nil {
-		Logger().Fatal(err.Error())
+	if _db == nil {
+		Logger().Debugf("Loading database with conf: \"%s\"", conf)
+		db, err := gorm.Open("postgres", conf)
+		if err != nil {
+			Logger().Fatal(err.Error())
+			return nil
+		}
+		_db = db
 	}
-
-	return db
+	return _db
 }
 
 //GetMockDB returns the mock database
