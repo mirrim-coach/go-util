@@ -39,20 +39,15 @@ func GetDefaultConfig() *DatabaseConfig {
 	return _DefaultConfig
 }
 
-var _db *gorm.DB
-
 // GetDBWithConfig returns a new db instance with the specified config
 func GetDBWithConfig(conf string) *gorm.DB {
-	if _db == nil {
-		Logger().Debugf("Loading database with conf: \"%s\"", conf)
-		db, err := gorm.Open("postgres", conf)
-		if err != nil {
-			Logger().Fatal(err.Error())
-			return nil
-		}
-		_db = db
+	Logger().Debugf("Loading database with conf: \"%s\"", conf)
+	db, err := gorm.Open("postgres", conf)
+	if err != nil {
+		Logger().Fatal(err.Error())
+		return nil
 	}
-	return _db
+	return db
 }
 
 //GetMockDB returns the mock database
