@@ -19,7 +19,7 @@ type DatabaseConfig struct {
 }
 
 func (d DatabaseConfig) toString() string {
-	return fmt.Sprintf(`host=%s port=%s user=%s dbname=%s password="%s" sslmode=%s`, d.Host, d.Port, d.User, d.DatabaseName, d.Password, d.SSLMode)
+	return fmt.Sprintf(`host='%s' port='%s' user='%s' dbname='%s' password='%s' sslmode='%s'`, d.Host, d.Port, d.User, d.DatabaseName, d.Password, d.SSLMode)
 }
 
 var _DefaultConfig *DatabaseConfig
