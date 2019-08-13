@@ -9,24 +9,24 @@ import (
 	"github.com/aws/aws-sdk-go/service/ssm"
 )
 
-func ConfigureEnvironmentFromParameterStore(parameterStoreName string, version string) {
-	fmt.Println("Getting parameter: ",parameterStoreName, "Version: ", version)
+func ConfigureEnvironmentFromParameterStore(parameterStoreName string, region string) {
+	fmt.Println("Getting parameter:",parameterStoreName)
 	sess, err := session.NewSessionWithOptions(session.Options{
-		Config:            aws.Config{Region: aws.String("us-east-1")},
+		Config:            aws.Config{Region: aws.String(region)},
 		SharedConfigState: session.SharedConfigEnable,
 	})
 	if err != nil {
 		panic(err)
 	}
 
-	ssmsvc := ssm.New(sess, aws.NewConfig().WithRegion("us-east-1"))
+	ssmsvc := ssm.New(sess, aws.NewConfig().WithRegion(region))
 	withDecryption := true
 	param, err := ssmsvc.GetParameter(&ssm.GetParameterInput{
 		Name:           &parameterStoreName,
 		WithDecryption: &withDecryption,
 	})
 	parametersJsonByte := []byte(*param.Parameter.Value)
-	fmt.Println("Parsing parameters")
+	fmt.Println("Parsing json")
 	var paramsInterface interface{}
 	json.Unmarshal(parametersJsonByte, &paramsInterface)
 	parameters := paramsInterface.(map[string]interface{})
