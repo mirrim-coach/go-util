@@ -2,7 +2,6 @@ package goutils
 
 import (
 	"fmt"
-
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres" //Adds the postgres dialect to gorm
 	mocket "github.com/selvatico/go-mocket"
@@ -63,10 +62,18 @@ func GetMockDB() *gorm.DB {
 }
 
 // GetDB returns an instance of the db
+var gormDB *gorm.DB
+
 func GetDB() *gorm.DB {
+	fmt.Println("Updated gorm db 500 connections")
 	env := GetEnvVariable("ENV", "development")
 	if env == "test" {
 		return GetMockDB()
 	}
-	return GetDBWithConfig(GetDefaultConfig().toString())
+	if gormDB == nil {
+		gormDB = GetDBWithConfig(GetDefaultConfig().toString())
+		gormDB.DB().SetMaxOpenConns(500)
+		gormDB.DB().SetMaxIdleConns(10)
+	}
+	return gormDB
 }
