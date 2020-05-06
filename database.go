@@ -73,8 +73,8 @@ func GetDB() *gorm.DB {
 	}
 	if gormDB == nil {
 		gormDB = GetDBWithConfig(GetDefaultConfig().toString())
-		gormDB.DB().SetMaxOpenConns(1000)
-		gormDB.DB().SetMaxIdleConns(720)
+		gormDB.DB().SetMaxOpenConns(500)
+		gormDB.DB().SetMaxIdleConns(10)
 		gormDB.DB().SetConnMaxLifetime(1 * time.Hour)
 	}
 	return gormDB
