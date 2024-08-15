@@ -1,4 +1,4 @@
-module github.com/Pairin/go-util
+module github.com/mirrim-coach/go-util
 
 go 1.12
 
